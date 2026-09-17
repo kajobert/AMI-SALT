@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ami.example/schemas/funding_trace_event.schema.json",
+  "title": "AMI-SALT Funding Trace Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "event_type",
+    "timestamp",
+    "currency",
+    "amount_minor",
+    "policy_version"
+  ],
+  "properties": {
+    "event_id": {"type": "string", "minLength": 1},
+    "event_type": {
+      "type": "string",
+      "enum": ["support", "credit_purchase", "spend", "allocation", "execution_link", "outcome_link"]
+    },
+    "timestamp": {"type": "string", "format": "date-time"},
+    "currency": {"type": "string", "minLength": 3, "maxLength": 8},
+    "amount_minor": {"type": "integer", "minimum": 0},
+    "policy_version": {"type": "string", "minLength": 1},
+    "supporter_id": {"type": ["string", "null"]},
+    "funding_lot_id": {"type": ["string", "null"]},
+    "spend_id": {"type": ["string", "null"]},
+    "provider": {"type": ["string", "null"]},
+    "resource_category": {
+      "type": ["string", "null"],
+      "enum": ["inference", "compute", "storage", "network", "research", "other", null]
+    },
+    "receipt_ref_hash": {"type": ["string", "null"]},
+    "execution_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "outcome_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "public_attribution": {"type": "boolean", "default": false},
+    "event_hash": {"type": ["string", "null"]}
+  }
+}
