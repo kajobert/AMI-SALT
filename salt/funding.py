@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .validation import integer_minor, nonblank
+
 
 @dataclass(frozen=True)
 class FundingLot:
@@ -27,23 +29,22 @@ def allocate_fifo(
     """Allocate one spend deterministically across funding lots in FIFO order.
 
     This is accounting provenance for pooled funds. It does not claim physical
-    traceability of individual currency units.
+    traceability of individual currency units. All lots must already be in one
+    currency and the caller supplies verified chronological order. This pure
+    function does not persist spend IDs or prevent cross-call double spending.
     """
-    if not spend_id.strip():
-        raise ValueError("spend_id is required")
-    if amount_minor <= 0:
-        raise ValueError("amount_minor must be > 0")
+    nonblank(spend_id, "spend_id")
+    integer_minor(amount_minor, "amount_minor", minimum=1)
 
     seen: set[str] = set()
     available = 0
     for lot in lots:
-        if not lot.lot_id.strip():
-            raise ValueError("lot_id is required")
+        nonblank(lot.lot_id, "lot_id")
+        nonblank(lot.supporter_id, "supporter_id")
         if lot.lot_id in seen:
             raise ValueError(f"duplicate lot_id: {lot.lot_id}")
         seen.add(lot.lot_id)
-        if lot.remaining_minor < 0:
-            raise ValueError("remaining_minor must be >= 0")
+        integer_minor(lot.remaining_minor, "remaining_minor")
         available += lot.remaining_minor
 
     if available < amount_minor:

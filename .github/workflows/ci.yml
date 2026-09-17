@@ -1,6 +1,6 @@
 name: AMI-SALT CI
 
-on:
+'on':
   pull_request:
   push:
     branches: [main]
@@ -9,23 +9,35 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: salt-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deterministic-ledger-bootstrap:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install CI validation dependency
+        run: python -m pip install -r requirements-ci.txt
       - name: Compile
         run: python -m compileall -q salt tests
       - name: Tests
         run: python -m unittest discover -s tests -v
-      - name: Validate JSON schema file
-        run: python - <<'PY'
+      - name: Check schema files are valid JSON
+        run: |
+          python - <<'PYTHON'
           import json
           from pathlib import Path
-          json.loads(Path('schemas/support_event.schema.json').read_text())
-          print('support_event schema JSON: PASS')
-          PY
+          paths = sorted(Path('schemas').glob('*.schema.json'))
+          assert paths, 'No schema files found'
+          for path in paths:
+              json.loads(path.read_text(encoding='utf-8'))
+              print(f'{path}: JSON syntax PASS')
+          PYTHON
