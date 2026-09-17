@@ -75,6 +75,8 @@ A useful supporter-facing metric is not merely money received but **what the sup
 
 `support -> funded resource -> AMI task/run -> verified output -> outcome`
 
+Detailed time-linked accounting provenance is specified in [`FUNDING_PROVENANCE.md`](FUNDING_PROVENANCE.md).
+
 This makes the system auditable without pretending that money itself creates trust.
 
 ## Financial independence target
