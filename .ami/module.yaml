@@ -1,0 +1,18 @@
+name: AMI-SALT
+ecosystem: AMI
+parent: kajobert/AMI
+kind: capability
+status: DESIGN
+motto: Trust instead of Authority
+visibility: public
+responsibilities:
+  - evidence-backed trust and contribution
+  - deterministic SALT event ledger
+  - financial support evidence
+  - infrastructure runway accounting
+separation_rules:
+  money_buys_salt_trust: false
+  support_can_fund_infrastructure: true
+  public_leaderboard_requires_opt_in: true
+  real_money_redemption: false
+  tradable_token: false
